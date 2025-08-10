@@ -122,7 +122,7 @@
 //   );
 // }
 
-// Day1
+// // Day1
 import{ useState } from 'react';
 
 // 型定義
@@ -193,6 +193,8 @@ export default function App() {
            value={form.name}
            onChange={onChange}
            />
+           {errors.name && <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.name}</span>} 
+           {/* エラー条件下で表示 */}
         </div>
         <div>
           <input
@@ -202,6 +204,7 @@ export default function App() {
             onChange={onChange}
             inputMode="email"
            />
+           {errors.email && <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.email}</span>}
         </div>
         <div>
         <input
@@ -211,6 +214,7 @@ export default function App() {
           onChange={onChange}
           inputMode="numeric"
         />
+        {errors.age && <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.age}</span>}
         </div>
         <button
           type="submit"
