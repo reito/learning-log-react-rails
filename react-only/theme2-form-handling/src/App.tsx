@@ -143,8 +143,9 @@ export default function App() {
 
   const validate = (f: Form): Errors => {
     const e: Errors = {};
+    //trimすることで空白の場合に空白が除去されてエラーになる
     if (!f.name.trim()) e.name = "必須";
-    //emailとageを正規化してバリデーション
+    //emailとageを正規化して真偽値バリデーション
     if(!emailRe.test(f.email)) e.email = "形式";
     if(!numRe.test(f.age)) e.age = "数字";
 
@@ -155,6 +156,7 @@ export default function App() {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     //Formのどれか、つまりname、email、ageのどれかを変更、入力するたびにvalidate(next)を回してエラー更新
     const k = e.target.name as keyof Form;
+    //e.target.valueは入力した値でこれがnextに入る
     const next = { ...form, [k]: e.target.value};
     setForm(next);
     setErrors(validate(next)); //常にチェック
@@ -166,7 +168,7 @@ export default function App() {
     e.preventDefault();
     const v = validate(form);
     setErrors(v);
-    //エラーがあれば送信しない
+    //エラーがあれば送信しない、ここでエラーがある項目名の配列を取得して値があるかどうか判断
     if (Object.keys(v).length) return;
 
     setBusy(true);
