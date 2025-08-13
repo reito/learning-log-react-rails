@@ -229,91 +229,94 @@
 //   );
 // }
 
+// // Day2(まずはDay1の復習)
+// import { useState} from 'react';
+
+// type Form = { name: string, email: string, age: string};
+// type Errors = Partial<Record<keyof Form, string>>;
+
+// const emailRe = /^\S+@\S+\.\S+$/;
+// const numRe = /^\d+$/;
+
+// export default function App() {
+//   const [form, setForm] = useState<Form>({ name: "", email: "", age: ""});
+//   const [errors, setErrors] = useState<Errors>({});
+//   const [busy, setBusy] = useState(false);
+
+//   const validate = (f: Form): Errors => {
+//     const e: Errors = {};
+//     if (!f.name.trim()) e.name = "必須";
+//     if (!emailRe.test(f.email)) e.email = "形式";
+//     if (!numRe.test(f.age)) e.age = "数字" ;
+
+//     return e;
+//   }
+
+//   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const k = e.target.name as keyof Form;
+//     const next = { ...form, [k]: e.target.value};
+//     setForm(next);
+//     setErrors(validate(next));
+//   }
+
+//   const onSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const v = validate(form);
+//     setErrors(v);
+//     if (Object.keys(v).length) return;
+
+//     setBusy(true);
+//     await new Promise((r) => setTimeout(r, 300));
+//     console.log("payload", { ...form, age: Number(form.age)});
+//     setBusy(false);
+
+//     setForm({ name: "", email: "", age: ""});
+//     setErrors({});
+//   }
+
+//   return (
+//     <div>
+//       <form onSubmit={onSubmit}>
+//         <h1>フォーム</h1>
+//         <div>
+//           <input
+//             name="name" 
+//             placeholder="Name"
+//             value={form.name}
+//             onChange={onChange}
+//            />
+//            {errors.name && <span style={{ color: 'red', fontSize: '0.875rem'}}>{errors.name}</span>}
+//         </div>
+//         <div>
+//           <input
+//             name="email" 
+//             placeholder="Email"
+//             value={form.email}
+//             onChange={onChange}
+//             inputMode="email"
+//            />
+//            {errors.email && <span style={{ color: 'red', fontSize: '0.875rem'}}>{errors.email}</span>}
+//         </div>
+//         <div>
+//           <input
+//             name="age" 
+//             placeholder="Age"
+//             value={form.age}
+//             onChange={onChange}
+//             inputMode="numeric"
+//            />
+//            {errors.age && <span style={{ color: 'red', fontSize: '0.875rem'}}>{errors.age}</span>}
+//         </div>
+//         <button
+//           type="submit"
+//           disabled={busy || Object.keys(errors).length > 0}
+//         >
+//           {busy ? "送信中" : "送信"}
+//         </button>
+//       </form>
+//     </div>
+//   );
+// }
+
 // Day2
-import { useState} from 'react';
 
-type Form = { name: string, email: string, age: string};
-type Errors = Partial<Record<keyof Form, string>>;
-
-const emailRe = /^\S+@\S+\.\S+$/;
-const numRe = /^\d+$/;
-
-export default function App() {
-  const [form, setForm] = useState<Form>({ name: "", email: "", age: ""});
-  const [errors, setErrors] = useState<Errors>({});
-  const [busy, setBusy] = useState(false);
-
-  const validate = (f: Form): Errors => {
-    const e: Errors = {};
-    if (!f.name.trim()) e.name = "必須";
-    if (!emailRe.test(f.email)) e.email = "形式";
-    if (!numRe.test(f.age)) e.age = "数字" ;
-
-    return e;
-  }
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const k = e.target.name as keyof Form;
-    const next = { ...form, [k]: e.target.value};
-    setForm(next);
-    setErrors(validate(next));
-  }
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const v = validate(form);
-    setErrors(v);
-    if (Object.keys(v).length) return;
-
-    setBusy(true);
-    await new Promise((r) => setTimeout(r, 300));
-    console.log("payload", { ...form, age: Number(form.age)});
-    setBusy(false);
-
-    setForm({ name: "", email: "", age: ""});
-    setErrors({});
-  }
-
-  return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <h1>フォーム</h1>
-        <div>
-          <input
-            name="name" 
-            placeholder="Name"
-            value={form.name}
-            onChange={onChange}
-           />
-           {errors.name && <span style={{ color: 'red', fontSize: '0.875rem'}}>{errors.name}</span>}
-        </div>
-        <div>
-          <input
-            name="email" 
-            placeholder="Email"
-            value={form.email}
-            onChange={onChange}
-            inputMode="email"
-           />
-           {errors.email && <span style={{ color: 'red', fontSize: '0.875rem'}}>{errors.email}</span>}
-        </div>
-        <div>
-          <input
-            name="age" 
-            placeholder="Age"
-            value={form.age}
-            onChange={onChange}
-            inputMode="numeric"
-           />
-           {errors.age && <span style={{ color: 'red', fontSize: '0.875rem'}}>{errors.age}</span>}
-        </div>
-        <button
-          type="submit"
-          disabled={busy || Object.keys(errors).length > 0}
-        >
-          {busy ? "送信中" : "送信"}
-        </button>
-      </form>
-    </div>
-  );
-}
