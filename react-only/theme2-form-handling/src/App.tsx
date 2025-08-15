@@ -318,5 +318,136 @@
 //   );
 // }
 
-// Day2
+// Day3(リアルタイムバリデーション＋touched（触れた項目だけエラー表示）＋エラー箇所へ自動フォーカス)見本
+import { useRef, useState } from "react";
+
+type Form = { name: string; email: string; age: string };
+type Errors = Partial<Record<keyof Form, string>>;
+
+const emailRe = /^\S+@\S+\.\S+$/;
+const numRe = /^\d+$/;
+
+export default function App() {
+  const [form, setForm] = useState<Form>({ name: "", email: "", age: "" });
+  const [errors, setErrors] = useState<Errors>({});
+  const [touched, setTouched] = useState<Record<keyof Form, boolean>>({
+    name: false,
+    email: false,
+    age: false,
+  });
+  const [busy, setBusy] = useState(false);
+
+  // エラー発生時に自動フォーカスさせるためのref
+  const refs = {
+    name: useRef<HTMLInputElement>(null),
+    email: useRef<HTMLInputElement>(null),
+    age: useRef<HTMLInputElement>(null),
+  };
+
+  const validate = (f: Form): Errors => {
+    const e: Errors = {};
+    if (!f.name.trim()) e.name = "必須";
+    if (!emailRe.test(f.email)) e.email = "形式";
+    if (!numRe.test(f.age)) e.age = "数字";
+    return e;
+  };
+
+  // 入力のたびに値更新＋即時バリデーション
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const k = e.target.name as keyof Form;
+    const next = { ...form, [k]: e.target.value };
+    setForm(next);
+    setErrors(validate(next));
+  };
+
+  // 触れた項目だけエラーを見せる
+  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const k = e.target.name as keyof Form;
+    setTouched((t) => ({ ...t, [k]: true }));
+  };
+
+  const firstErrorKey = (e: Errors): keyof Form | undefined =>
+    (["name", "email", "age"] as (keyof Form)[]).find((k) => e[k]);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // 送信時は全項目をtouchedにしてエラーを全部表示
+    setTouched({ name: true, email: true, age: true });
+
+    const v = validate(form);
+    setErrors(v);
+
+    const bad = firstErrorKey(v);
+    if (bad) {
+      refs[bad].current?.focus(); // 最初のエラーへフォーカス
+      return;
+    }
+
+    setBusy(true);
+    try {
+      // 擬似送信（ここをfetchに差し替え可）
+      await new Promise((r) => setTimeout(r, 300));
+      console.log("payload", { ...form, age: Number(form.age) });
+
+      // 成功したらリセット
+      setForm({ name: "", email: "", age: "" });
+      setErrors({});
+      setTouched({ name: false, email: false, age: false });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const show = (k: keyof Form) => touched[k] && errors[k];
+  const hasError = Object.keys(errors).length > 0;
+
+  return (
+    <form onSubmit={onSubmit}>
+      <h1>フォーム</h1>
+
+      <div>
+        <input
+          ref={refs.name}
+          name="name"
+          placeholder="Name"
+          value={form.name}
+          onChange={onChange}
+          onBlur={onBlur}
+        />
+        {show("name") && <span style={{ color: "red" }}>{errors.name}</span>}
+      </div>
+
+      <div>
+        <input
+          ref={refs.email}
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={onChange}
+          onBlur={onBlur}
+          inputMode="email"
+        />
+        {show("email") && <span style={{ color: "red" }}>{errors.email}</span>}
+      </div>
+
+      <div>
+        <input
+          ref={refs.age}
+          name="age"
+          placeholder="Age"
+          value={form.age}
+          onChange={onChange}
+          onBlur={onBlur}
+          inputMode="numeric"
+        />
+        {show("age") && <span style={{ color: "red" }}>{errors.age}</span>}
+      </div>
+
+      <button type="submit" disabled={busy || hasError}>
+        {busy ? "送信中..." : "送信"}
+      </button>
+    </form>
+  );
+}
+
 
